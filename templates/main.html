@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Main Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color:  #E6E6FA;
+            margin: 0;
+            padding: 0;
+        }
+    
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+        }
+    
+        h1 {
+            text-align: center;
+            color: #333;
+            text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);
+        }
+    
+        h2 {
+            color: #666;
+            border-bottom: 2px solid #ccc;
+            padding-bottom: 5px;
+        }
+    
+        .user-area {
+            text-align: center;
+            color: #666;
+            margin-bottom: 20px;
+        }
+    
+        .music-list {
+            list-style-type: none;
+            padding: 0;
+        }
+    
+        .music-list li {
+            background-color: #f9f9f9;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    
+        .music-info {
+            flex-grow: 1;
+            margin-right: 10px;
+        }
+    
+        .btn {
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    
+        .btn-remove {
+            background-color: #f44336;
+        }
+    
+        .query-form {
+            margin-top: 20px;
+            text-align: center;
+        }
+    
+        .query-form input[type="text"] {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+    
+        .logout-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+    
+        .logout-link a {
+            color: #666;
+            text-decoration: none;
+        }
+    
+        .logout-link a:hover {
+            color: #333;
+        }
+    
+        .error-message {
+            color: red;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+    
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to the Main Page</h1>
+        <div class="user-area">
+            <p>Welcome, {{ user.Username }}!</p>
+        </div>
+        <div class="subscription-area">
+            <h2>Subscribed Music</h2>
+            {% if subscribed_music_list %}
+                <ul class="music-list">
+                    {% for music in subscribed_music_list %}
+                        <li>
+                            <div class="music-info">
+                                <span>{{ music.music_title }} - {{ music.artist }} ({{ music.year }})</span>
+                                <img src="{{ music.image_url }}" alt="{{ music.music_title }}" width="50" height="50">
+                            </div>
+                            <form action="{{ url_for('remove') }}" method="POST">
+                                <input type="hidden" name="title" value="{{ music.music_title }}">
+                                <button type="submit" class="btn btn-remove">Remove</button>
+                            </form>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No subscribed music found.</p>
+            {% endif %}
+        </div>
+        <div class="query-area">
+            <h2>Query Music</h2>
+            <form action="{{ url_for('main') }}" method="POST" class="query-form">
+                <input type="text" id="title" name="title" placeholder="Title">
+                <input type="text" id="year" name="year" placeholder="Year">
+                <input type="text" id="artist" name="artist" placeholder="Artist">
+                <button type="submit" class="btn">Query</button>
+            </form>
+            {% if message %}
+                <div class="error-message">{{ message }}</div>
+                {% elif music_list %}
+                 
+                 <ul class="music-list">
+                    {% for music in music_list %}
+                        
+                        
+                        <li>
+                            <div class="music-info">
+                                <span>{{ music.title }} - {{ music.artist }} ({{ music.year }})</span>
+                                <a href="{{ music.web_url }}" target="_blank">More Info</a>
+                                <img src="{{ music.image_url }}" alt="{{ music.title }}" width="50" height="50">
+                            </div>
+                            <form action="{{ url_for('subscribe') }}" method="POST">
+                                <input type="hidden" name="title" value="{{ music.title }}">
+                                <input type="hidden" name="artist" value="{{ music.artist }}">
+                                <input type="hidden" name="year" value="{{ music.year }}">
+                                <input type="hidden" name="image_url" value="{{ music.image_url }}">
+                                <button type="submit" class="btn">Subscribe</button>
+                            </form>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+        <div class="logout-link">
+            <a href="{{ url_for('logout') }}">Logout</a>
+        </div>
+    </div>
+</body>
+</html>
